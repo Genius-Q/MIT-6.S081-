@@ -113,6 +113,18 @@ found:
     return 0;
   }
 
+  //给alarm_trapflame分配陷阱帧
+  if((p->genius_alarm_trapframe=(struct trapframe *)kalloc())==0){
+  	release(&p->lock);
+	return 0;
+  }
+
+  //进程创建时初始化alarm相关
+  p->genius_alarm_interval = 0;
+  p->genius_alarm_handler = 0;
+  p->genius_alarm_ticks = 0;
+  p->genius_alarm_goingoff = 0;
+
   // An empty user page table.
   p->pagetable = proc_pagetable(p);
   if(p->pagetable == 0){
@@ -141,6 +153,17 @@ freeproc(struct proc *p)
   p->trapframe = 0;
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
+  if(p->genius_alarm_trapframe)
+    kfree((void*)p->genius_alarm_trapframe);
+  p->genius_alarm_trapframe=0;
+
+  //释放结构体中alarm相关的变量
+  p->genius_alarm_interval = 0;
+  p->genius_alarm_handler = 0;
+  p->genius_alarm_ticks = 0;
+  p->genius_alarm_goingoff = 0;
+
+
   p->pagetable = 0;
   p->sz = 0;
   p->pid = 0;

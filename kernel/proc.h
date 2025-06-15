@@ -103,4 +103,20 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  //时钟相关
+  int genius_alarm_interval;		//时钟周期，为0时表示禁用时钟
+  void(*genius_alarm_handler)();	//时钟回调处理函数
+  int genius_alarm_ticks;		//当前时钟信号数
+  struct trapframe* genius_alarm_trapframe;	//时钟中断时刻进程的陷阱帧，用于恢复进程中断前的状态
+  int genius_alarm_goingoff;		//是否已经有一个时钟中断正在执行且还未返回
 };
+
+//在进程初始化和释放进程时，也要对这些字段进行初始化和释放
+/*
+static struct proc* 			//初始化进程
+allocproc(void)
+{
+
+}
+*/

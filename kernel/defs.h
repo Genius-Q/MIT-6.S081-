@@ -80,6 +80,7 @@ int             pipewrite(struct pipe*, uint64, int);
 void            printf(char*, ...);
 void            panic(char*) __attribute__((noreturn));
 void            printfinit(void);
+void 		genius_backtrace();		//打印调用过的函数的地址，打印出调用栈
 
 // proc.c
 int             cpuid(void);
@@ -145,6 +146,8 @@ void            trapinit(void);
 void            trapinithart(void);
 extern struct spinlock tickslock;
 void            usertrapret(void);
+int 		genius_sigalarm(int ticks, void(*handler)());	//设置进程中时钟的相关属性
+int		genius_sigreturn(void);				//将进程恢复到alarm中断前的状态
 
 // uart.c
 void            uartinit(void);
