@@ -46,9 +46,20 @@ sys_sbrk(void)
 
   if(argint(0, &n) < 0)
     return -1;
-  addr = myproc()->sz;
-  if(growproc(n) < 0)
+  addr = myproc()->sz;		//sz记录用户地址空间大小，始终指向堆的顶部
+  /*	
+  if(growproc(n) < 0)		//采用惰性分配
     return -1;
+  */
+
+  struct proc* p=myproc();	//取当前进程
+  if( n > 0 )			//如果是内存扩容
+	  p->sz+=n;		//增大空间
+  else if(p-> sz + n >0 )	//如果是减少内存，马上执行，并检查减去内存后是否大于0
+	  p->sz= uvmdealloc(p->pagetable,p->sz,p->sz+n);
+  else
+	  return -1;
+
   return addr;
 }
 
